@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class ApiHooks implements BeforeAllCallback {
     @BeforeEach
-    public static void allureStarter(){
+    public void allureStarter(){
         String listenerName = "AllureSelenide";
         if(!(SelenideLogger.hasListener(listenerName)))
             SelenideLogger.addListener(listenerName,

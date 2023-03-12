@@ -1,25 +1,20 @@
 package APISteps;
-import hooks.ApiHooks;
 import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Затем;
-import io.cucumber.java.ru.И;
 import io.cucumber.java.ru.Тогда;
 import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 @Tag("TEST")
-public class RickAPISteps extends ApiHooks {
+public class RickAPISteps{
+
     public static Properties APIprop = new Properties();
     public static String CharID;
     public static String LastEpisodeId;
@@ -28,25 +23,22 @@ public class RickAPISteps extends ApiHooks {
     public static String MortySpec;
     public static String CharLoc;
     public static String CharSpec;
-
-    @Дано("ID первого персонажа {String}")
-    public static void IDПервогоПерсонажа() throws IOException {
-        ApiHooks.allureStarter();
-        APIprop.load(new FileInputStream("C:/Users/Magnus/IdeaProjects/" +
-                                "/FInal_exam_1/src/test/resources/taskcreate.properties"));
+    @Дано("ID")
+    public void id() throws IOException {
+        String dir = System.getProperty("user.dir");
+        APIprop.load(new FileInputStream(dir + "/src/test/resources/App.properties"));
         CharID = APIprop.getProperty("ID");
     }
-    @Тогда("получение данных о первом персонаже")
-    public static void получениеДанныхОПервомПерсонаже() {
-        Response gettingChar = given().filter(new AllureRestAssured()).filter(new RequestLoggingFilter())
-                .filter(new ResponseLoggingFilter())
+
+        @Тогда("Получить данные о первом персонаже")
+    public void получить_данные_о_первом_персонаже() {
+        Response gettingChar = given().filter(new AllureRestAssured())
                 .baseUri("https://rickandmortyapi.com/api")
                 .when()
                 .get("/character/" + CharID)
                 .then()
                 .extract()
                 .response();
-        String charName = (new JSONObject(gettingChar.getBody().asString()).get("name").toString());
         int episode = (new JSONObject(gettingChar.getBody().asString()).getJSONArray("episode").length() - 1);
         LastEpisodeId = new JSONObject(gettingChar.getBody().asString())
                 .getJSONArray("episode").get(episode).toString().replaceAll("[^0-9]", "");
@@ -56,7 +48,7 @@ public class RickAPISteps extends ApiHooks {
     }
     @Затем("айди последнего персонажа в последнем эпизоде")
     public static void айдиПоследнегоПерсонажа() {
-        Response getCharFromEpisode = given()
+        Response getCharFromEpisode = given().filter(new AllureRestAssured())
                 .baseUri("https://rickandmortyapi.com/api")
                 .when()
                 .get("/episode/" + LastEpisodeId)
@@ -69,7 +61,7 @@ public class RickAPISteps extends ApiHooks {
     }
     @Затем("получение информации о последнем персонаже")
     public static void получениеИнформацииОПоследнемПерсонаже() {
-        Response gettingChar = given()
+        Response gettingChar = given().filter(new AllureRestAssured())
                 .baseUri("https://rickandmortyapi.com/api")
                 .when()
                 .get("/character/" + LastCharacterId)
@@ -79,11 +71,12 @@ public class RickAPISteps extends ApiHooks {
         CharSpec = new JSONObject(gettingChar.getBody().asString()).get("species").toString();
         CharLoc = new JSONObject(gettingChar.getBody().asString()).getJSONObject("location").get("name").toString();
     }
-    @И("сравнение данных о персонажах")
+    @Тогда("сравнение данных о персонажах")
     public static void сравнениеДанныхОПерсонажах() {
         Assertions.assertAll(
                 () -> assertEquals("Another Locations",MortyLoc,CharLoc),
                 () -> assertEquals("Another Species",MortySpec, CharSpec)
         );
     }
+
 }

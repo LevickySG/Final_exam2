@@ -1,4 +1,4 @@
-package TestAPI;
+package Test;
 
 import hooks.ApiHooks;
 import io.cucumber.junit.Cucumber;
