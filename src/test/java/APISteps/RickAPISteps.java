@@ -30,7 +30,7 @@ public class RickAPISteps{
         CharID = APIprop.getProperty("ID");
     }
 
-        @Тогда("Получить данные о первом персонаже")
+    @Тогда("Получить данные о первом персонаже")
     public void получить_данные_о_первом_персонаже() {
         Response gettingChar = given().filter(new AllureRestAssured())
                 .baseUri("https://rickandmortyapi.com/api")
@@ -55,7 +55,8 @@ public class RickAPISteps{
                 .then()
                 .extract()
                 .response();
-        int lastcharId = (new JSONObject(getCharFromEpisode.getBody().asString()).getJSONArray("characters").length() - 1);
+        int lastcharId = (new JSONObject(getCharFromEpisode.getBody().asString())
+                .getJSONArray("characters").length() - 1);
         LastCharacterId = new JSONObject(getCharFromEpisode.getBody().asString())
                 .getJSONArray("characters").get(lastcharId).toString().replaceAll("[^0-9]", "");
     }
